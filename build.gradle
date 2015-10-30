@@ -1,7 +1,8 @@
-group 'org.mybop'
-version '0.1'
-
 apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+group 'org.mybop'
+version '0.1.0'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -25,4 +26,28 @@ dependencies {
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourceJar {
+                classifier "sources"
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "https://api.bintray.com/content/gautierlevert/maven/ormlite-jodatime/$version"
+            credentials {
+                username bintrayUser
+                password bintrayKey
+            }
+        }
+    }
 }
