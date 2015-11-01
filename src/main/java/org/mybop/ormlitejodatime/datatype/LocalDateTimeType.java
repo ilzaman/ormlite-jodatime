@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public final class LocalDateTimeType extends BaseDataType {
 
     public LocalDateTimeType() {
-        super(SqlType.LONG, new Class[]{LocalDateTimeType.class});
+        super(SqlType.LONG, new Class[]{LocalDateTime.class});
     }
 
     @Override
