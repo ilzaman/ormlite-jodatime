@@ -1,82 +1,28 @@
-buildscript {
-    ext {
-        ormlite_version = '5.1'
-        junit_version = '4.12'
-        mockito_version = '2.19.0'
-        assertj_version = '3.10.0'
-        h2_version = '1.4.197'
-        jodatime_version = '2.10'
-    }
-
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
-
-}
+group 'org.mybop'
+version '0.1'
 
 apply plugin: 'java'
-apply plugin: 'maven-publish'
-
-group 'org.mybop'
-version '1.0'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
 dependencies {
-    compile "joda-time:joda-time:$jodatime_version"
+    compile 'joda-time:joda-time:2.9';
 
-    compile "com.j256.ormlite:ormlite-core:$ormlite_version"
+    compile 'com.j256.ormlite:ormlite-core:4.48'
 
-    testCompile "junit:junit:$junit_version"
-    testCompile "org.mockito:mockito-core:$mockito_version"
-    testCompile "org.assertj:assertj-core:$assertj_version"
+    testCompile 'junit:junit:4.12'
 
-    testCompile "com.j256.ormlite:ormlite-jdbc:$ormlite_version"
+    testCompile 'com.j256.ormlite:ormlite-jdbc:4.48'
 
-    testCompile "com.h2database:h2:$h2_version"
+    testCompile 'com.h2database:h2:1.4.190'
 }
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-
-javadoc {
-    options {
-        links << 'http://docs.oracle.com/javase/6/docs/api/'
-        links << 'http://ormlite.com/javadoc/ormlite-core/'
-        links << 'http://www.joda.org/joda-time/apidocs/'
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = project.group
-            artifactId = project.name
-            version = project.version
-
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
-        }
-    }
 }
