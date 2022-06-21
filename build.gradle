@@ -1,26 +1,50 @@
+buildscript {
+    ext {
+        ormlite_version = '5.1'
+        junit_version = '4.12'
+        mockito_version = '2.19.0'
+        assertj_version = '3.10.0'
+        h2_version = '1.4.197'
+        jodatime_version = '2.10'
+    }
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.1'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 group 'org.mybop'
-version '0.1.1'
+version '1.0'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
 dependencies {
-    compile 'joda-time:joda-time:2.9';
+    compile "joda-time:joda-time:$jodatime_version"
 
-    compile 'com.j256.ormlite:ormlite-core:4.48'
+    compile "com.j256.ormlite:ormlite-core:$ormlite_version"
 
-    testCompile 'junit:junit:4.12'
+    testCompile "junit:junit:$junit_version"
+    testCompile "org.mockito:mockito-core:$mockito_version"
+    testCompile "org.assertj:assertj-core:$assertj_version"
 
-    testCompile 'com.j256.ormlite:ormlite-jdbc:4.48'
+    testCompile "com.j256.ormlite:ormlite-jdbc:$ormlite_version"
 
-    testCompile 'com.h2database:h2:1.4.190'
+    testCompile "com.h2database:h2:$h2_version"
 }
 
 tasks.withType(JavaCompile) {
@@ -28,26 +52,54 @@ tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
 }
 
-task sourceJar(type: Jar) {
-    from sourceSets.main.allJava
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+
+    publications = ['mavenJava']
+
+    publish = false
+
+    pkg {
+        repo = 'maven'
+        name = project.name
+        licenses = ['ISC']
+        vcsUrl = 'https://github.com/GautierLevert/ormlite-jodatime'
+        version {
+            name = project.version
+            desc = 'OrmLite support for JodaTime types v1.0'
+        }
+    }
+}
+
+javadoc {
+    options {
+        links << 'http://docs.oracle.com/javase/6/docs/api/'
+        links << 'http://ormlite.com/javadoc/ormlite-core/'
+        links << 'http://www.joda.org/joda-time/apidocs/'
+    }
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
             from components.java
-            artifact sourceJar {
-                classifier "sources"
-            }
-        }
-    }
-    repositories {
-        maven {
-            url "https://api.bintray.com/content/gautierlevert/maven/ormlite-jodatime/$version"
-            credentials {
-                username bintrayUser
-                password bintrayKey
-            }
+            artifact sourcesJar
+            artifact javadocJar
         }
     }
 }
