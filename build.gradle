@@ -13,14 +13,10 @@ buildscript {
         mavenCentral()
     }
 
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.1'
-    }
 }
 
 apply plugin: 'java'
 apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
 
 group 'org.mybop'
 version '1.0'
@@ -62,25 +58,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-bintray {
-    user = bintrayUser
-    key = bintrayKey
-
-    publications = ['mavenJava']
-
-    publish = false
-
-    pkg {
-        repo = 'maven'
-        name = project.name
-        licenses = ['ISC']
-        vcsUrl = 'https://github.com/GautierLevert/ormlite-jodatime'
-        version {
-            name = project.version
-            desc = 'OrmLite support for JodaTime types v1.0'
-        }
-    }
-}
 
 javadoc {
     options {
